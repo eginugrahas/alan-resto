@@ -3,8 +3,8 @@ import { Route, Routes } from "react-router-dom";
 import Header from "./components/Header";
 import Food from "./pages/Food";
 import Transaction from "./pages/Transaction";
+import AddFood from "./pages/AddFood";
 import "./App.css";
-import Modal from "./components/Modal";
 
 function App() {
     return (
@@ -14,6 +14,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Transaction />} />
                     <Route path="/food" element={<Food />} />
+                    <Route path="/food/add" element={<AddFood />} />
                 </Routes>
             </main>
         </>
