@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+:root {
+  font-family: 'Nunito', sans-serif;
+  line-height: 1.5;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+}
+
+
+header a.active{
+  color: #2d76ed;
+  border-bottom: 1px solid #2d76ed;
+}
+
+/* width */
+::-webkit-scrollbar { 
+  width: 3px;
+  height: 3px;
+} 
+
+/* Track */
+::-webkit-scrollbar-track { 
+  background: #f1f1f1; 
+} 
+
+/* Handle */
+::-webkit-scrollbar-thumb { 
+  background: #D9D9D9; 
+  border-radius: 5px; 
+} 
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover { 
+  background: #C6C0C0; 
+}
+
+
+@keyframes anvil {
+  0% {
+    transform: scale(1) translateY(0px);
+    opacity: 0;
+    box-shadow: 0 0 0 rgba(241, 241, 241, 0);
+  }
+  1% {
+    transform: scale(0.96) translateY(10px);
+    opacity: 0;
+    box-shadow: 0 0 0 rgba(241, 241, 241, 0);
+  }
+  100% {
+    transform: scale(1) translateY(0px);
+    opacity: 1;
+    box-shadow: 0 0 500px rgba(241, 241, 241, 0);
+  }
+}
+.popup-content {
+  -webkit-animation: anvil 0.3s cubic-bezier(0.38, 0.1, 0.36, 0.9) forwards;
+}
