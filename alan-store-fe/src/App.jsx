@@ -5,6 +5,7 @@ import Food from "./pages/Food";
 import Transaction from "./pages/Transaction";
 import AddFood from "./pages/AddFood";
 import "./App.css";
+import { Toaster } from 'react-hot-toast';
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                     <Route path="/food" element={<Food />} />
                     <Route path="/food/add" element={<AddFood />} />
                 </Routes>
+                <Toaster />
             </main>
         </>
     );

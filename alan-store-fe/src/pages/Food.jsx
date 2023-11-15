@@ -1,7 +1,19 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import axios from "axios";
+import { parsingRibuan } from "../helpers";
 
 function Food() {
+    const [menu, setMenu] = useState([]);
+
+    useEffect(() => {
+        axios.get("http://localhost:8000/api/menu").then((res) => {
+            // console.log(res);
+            setMenu(res.data.data);
+            // console.log(menu);
+        });
+    }, []);
+
     return (
         <div className="pt-10 px-[10%]">
             <div className="text-lg mb-5">
@@ -25,12 +37,36 @@ function Food() {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td className="px-4 py-2 text-center">1</td>
-                            <td className="px-4 py-2">Sate Ayam</td>
-                            <td className="px-4 py-2 text-center">img</td>
-                            <td className="px-4 py-2">Rp. 20.000</td>
-                        </tr>
+                        {menu
+                            ? menu.map((item, index) => {
+                                  return (
+                                      <tr key={index}>
+                                          <td className="px-4 py-2 text-center">
+                                              {index++ + 1}
+                                          </td>
+                                          <td className="px-4 py-2">
+                                              {item.name}
+                                          </td>
+                                          <td
+                                              className="px-4 py-2"
+                                              align="center"
+                                          >
+                                              <img
+                                                  src={
+                                                      "http://localhost:8000/uploaded-images/" +
+                                                      item.image
+                                                  }
+                                                  alt={item.name}
+                                                  className="w-[100px] h-[100px] object-cover"
+                                              />
+                                          </td>
+                                          <td className="px-4 py-2">
+                                              Rp. {parsingRibuan(item.price)}
+                                          </td>
+                                      </tr>
+                                  );
+                              })
+                            : null}
                     </tbody>
                 </table>
             </div>
