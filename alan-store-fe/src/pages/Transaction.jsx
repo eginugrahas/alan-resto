@@ -89,7 +89,7 @@ function Transaction() {
                                           menu.image
                                       }
                                       alt={menu.name}
-                                      className="h-44 object-cover"
+                                      className="h-40 object-cover"
                                   />
                                   <div className="text-center font-bold">
                                       {menu.name}

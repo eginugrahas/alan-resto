@@ -30,6 +30,11 @@ function AddFood() {
         //     console.log(key[0] + ', ' + key[1]);
         // }
 
+        if(name === "" || price === 0 || file === null) {
+            toast.error("Semua field harus diisi");
+            return;
+        }
+
         axios.post("http://localhost:8000/api/add-menu", formData).then((res) => {
             // console.log(res);
         }).then(() => {
