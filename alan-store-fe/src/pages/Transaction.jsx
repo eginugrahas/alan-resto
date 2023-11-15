@@ -1,78 +1,152 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
+import axios from "axios";
+import { parsingRibuan } from "../helpers";
+import toast from "react-hot-toast";
+import { useReactToPrint } from "react-to-print";
 
 function Transaction() {
+    const [menus, setMenus] = useState([]);
+    const [cart, setCart] = useState([]);
     const [openModalBayar, setOpenModalBayar] = useState(false);
     const [openSaveBill, setOpenSaveBill] = useState(false);
+    const [sumCart, setSumCart] = useState(0);
+    const [pay, setPay] = useState(0);
+    const [change, setChange] = useState(0);
+    const printRef = useRef();
 
-    function printBill() {
-        window.print();
+    const printBill = useReactToPrint({
+        content: () => printRef.current,
+    });
+
+    function handlePay() {
+        if (pay < sumCart) {
+            toast.error("Uang Pembeli Kurang");
+            return;
+        }
+        setChange(pay - sumCart);
+        toast.success("Transaksi Berhasil");
+        setTimeout(() => {
+            setOpenModalBayar(false);
+            clearCart();
+        }, 3000);
     }
+
+    function clearCart() {
+        setCart([]);
+        setSumCart(0);
+    }
+
+    function handleAddToCart(menu) {
+        const existingItemIndex = cart.findIndex((item) => item.id === menu.id);
+
+        if (existingItemIndex !== -1) {
+            setCart((prevCart) => [
+                ...prevCart.slice(0, existingItemIndex),
+                {
+                    ...prevCart[existingItemIndex],
+                    qty: prevCart[existingItemIndex].qty + 1,
+                },
+                ...prevCart.slice(existingItemIndex + 1),
+            ]);
+        } else {
+            setCart((prevCart) => [
+                ...prevCart,
+                {
+                    id: menu.id,
+                    name: menu.name,
+                    price: menu.price,
+                    image: menu.image,
+                    qty: 1,
+                },
+            ]);
+        }
+
+        setSumCart((prevSumCart) => prevSumCart + menu.price);
+    }
+
+    useEffect(() => {
+        axios.get("http://localhost:8000/api/menu").then((res) => {
+            setMenus(res.data.data);
+        });
+    }, []);
 
     return (
         <div className="pt-10 flex px-[10%]">
             <div className="w-full grid grid-cols-3 gap-10">
-                <div className="flex flex-col gap-3 rounded shadow-lg w-52 h-60 pb-3 hover:scale-105 cursor-pointer">
-                    <div className="border border-black w-52 h-44">img</div>
-                    <div className="text-center font-bold">Sate Ayam</div>
-                    <div className="text-center text-primary font-bold">
-                        Rp. 20.000
-                    </div>
-                </div>
+                {menus
+                    ? menus.map((menu, index) => {
+                          return (
+                              <div
+                                  onClick={() => handleAddToCart(menu)}
+                                  key={index}
+                                  className="flex flex-col gap-3 rounded shadow-lg w-52 h-60 pb-3 hover:scale-105 cursor-pointer"
+                              >
+                                  <img
+                                      src={
+                                          "http://localhost:8000/uploaded-images/" +
+                                          menu.image
+                                      }
+                                      alt={menu.name}
+                                      className="h-44 object-cover"
+                                  />
+                                  <div className="text-center font-bold">
+                                      {menu.name}
+                                  </div>
+                                  <div className="text-center text-primary font-bold">
+                                      Rp. {parsingRibuan(menu.price)}
+                                  </div>
+                              </div>
+                          );
+                      })
+                    : "Belum ada Menu"}
             </div>
             <div className="min-w-[350px] bg-white min-h-[500px] max-h-[600px] shadow-lg p-5  flex flex-col items-center">
-                <div className="text-xl font-bold">
-                    <span>
-                        <i className="icon-user-circle"></i>
-                    </span>{" "}
-                    Pesanan
-                </div>
-                <div className="overflow-y-scroll my-5 w-full">
-                    <div className="flex justify-between items-center w-full mt-5">
-                        <div className="border border-black w-20 h-16">img</div>
-                        <p className="text-sm font-bold">Sate Ayam</p>
-                        <p className="text-sm font-bold">X1</p>
-                        <p className="text-sm font-bold text-primary">
-                            Rp. 20.000
-                        </p>
+                <div className="w-full text-center" ref={printRef}>
+                    <div className="text-xl font-bold">
+                        <span>
+                            <i className="icon-user-circle"></i>
+                        </span>{" "}
+                        Pesanan
                     </div>
-                    <div className="flex justify-between items-center w-full mt-5">
-                        <div className="border border-black w-20 h-16">img</div>
-                        <p className="text-sm font-bold">Sate Ayam</p>
-                        <p className="text-sm font-bold">X1</p>
-                        <p className="text-sm font-bold text-primary">
-                            Rp. 20.000
-                        </p>
-                    </div>
-                    <div className="flex justify-between items-center w-full mt-5">
-                        <div className="border border-black w-20 h-16">img</div>
-                        <p className="text-sm font-bold">Sate Ayam</p>
-                        <p className="text-sm font-bold">X1</p>
-                        <p className="text-sm font-bold text-primary">
-                            Rp. 20.000
-                        </p>
-                    </div>
-                    <div className="flex justify-between items-center w-full mt-5">
-                        <div className="border border-black w-20 h-16">img</div>
-                        <p className="text-sm font-bold">Sate Ayam</p>
-                        <p className="text-sm font-bold">X1</p>
-                        <p className="text-sm font-bold text-primary">
-                            Rp. 20.000
-                        </p>
-                    </div>
-                    <div className="flex justify-between items-center w-full mt-5">
-                        <div className="border border-black w-20 h-16">img</div>
-                        <p className="text-sm font-bold">Sate Ayam</p>
-                        <p className="text-sm font-bold">X1</p>
-                        <p className="text-sm font-bold text-primary">
-                            Rp. 20.000
-                        </p>
+                    <div className="overflow-y-scroll my-5 w-full" id="bill">
+                        {cart
+                            ? cart.map((item, index) => {
+                                  return (
+                                      <div
+                                          key={index}
+                                          className="flex justify-between items-center w-full mt-5"
+                                      >
+                                          <img
+                                              src={
+                                                  "http://localhost:8000/uploaded-images/" +
+                                                  item.image
+                                              }
+                                              alt={item.name}
+                                              className="w-[70px] h-[70px] object-cover"
+                                          />
+                                          <p className="text-sm font-bold">
+                                              {item.name}
+                                          </p>
+                                          <p className="text-sm font-bold">
+                                              X{item.qty}
+                                          </p>
+                                          <p className="text-sm font-bold text-primary">
+                                              Rp. {parsingRibuan(item.price)}
+                                          </p>
+                                      </div>
+                                  );
+                              })
+                            : "Belum ada Pesanan"}
                     </div>
                 </div>
                 <div className="mt-auto w-full">
                     <div className="flex flex-col gap-4">
-                        <button className="text-red-500 border border-red-500 p-1 text-center font-bold rounded">
+                        <button
+                            onClick={clearCart}
+                            className="text-red-500 border border-red-500 p-1 text-center font-bold rounded"
+                        >
                             Clear Cart
                         </button>
                         <div className="flex justify-between gap-3 w-full items-center">
@@ -82,15 +156,20 @@ function Transaction() {
                             >
                                 Save Bill
                             </button>
-                            <button onClick={printBill} className="bg-green-500 text-white p-1 text-center font-bold rounded w-full ">
+                            <button
+                                onClick={printBill}
+                                className="bg-green-500 text-white p-1 text-center font-bold rounded w-full "
+                            >
                                 Print Bill
                             </button>
                         </div>
                         <button
                             onClick={() => setOpenModalBayar(true)}
-                            className="text-white border bg-primary p-1 text-center font-bold rounded"
+                            disabled={sumCart === 0}
+                            className="text-white border disabled:bg-opacity-70 bg-primary p-1 text-center font-bold rounded"
                         >
-                            Charge Rp. 20.000
+                            Charge{" "}
+                            {sumCart ? "Rp. " + parsingRibuan(sumCart) : ""}
                         </button>
                     </div>
                 </div>
@@ -110,7 +189,10 @@ function Transaction() {
                 <div className="flex flex-col items-center gap-5">
                     <div className="text-green-500 text-xl">Saved!</div>
                     <div className="text-lg">Bill berhasil disimpan</div>
-                    <button onClick={()=>setOpenSaveBill(false)} className="rounded bg-primary text-white p-2 px-3">
+                    <button
+                        onClick={() => setOpenSaveBill(false)}
+                        className="rounded bg-primary text-white p-2 px-3"
+                    >
                         Tutup
                     </button>
                 </div>
@@ -121,12 +203,12 @@ function Transaction() {
                 modal
                 closeOnDocumentClick
                 repositionOnResize
-                contentStyle={{ borderRadius: "10px" }}
+                contentStyle={{ borderRadius: "10px", minWidth: "800px" }}
             >
                 <div className="p-10">
                     <h3 className="font-semibold text-lg">Detail Pesanan</h3>
                     <div className="flex items-center justify-between">
-                        <table className="table-auto border w-full mx-5">
+                        <table className="table-auto border w-full mr-5">
                             <thead>
                                 <tr className="bg-gray-200">
                                     <th className="px-4 py-2">#</th>
@@ -136,18 +218,46 @@ function Transaction() {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr className="text-center">
-                                    <td className="px-4 py-2">1</td>
-                                    <td className="px-4 py-2">Sate Ayam</td>
-                                    <td className="px-4 py-2">img</td>
-                                    <td className="px-4 py-2">Rp. 20.000</td>
-                                </tr>
+                                {cart
+                                    ? cart.map((item, index) => {
+                                          return (
+                                              <tr key={index}>
+                                                  <td className="px-4 py-2 text-center">
+                                                      {index++ + 1}
+                                                  </td>
+                                                  <td className="px-4 py-2">
+                                                      {item.name}
+                                                  </td>
+                                                  <td
+                                                      className="px-4 py-2"
+                                                      align="center"
+                                                  >
+                                                      <img
+                                                          src={
+                                                              "http://localhost:8000/uploaded-images/" +
+                                                              item.image
+                                                          }
+                                                          alt={item.name}
+                                                          className="w-[50px] h-[50px] object-cover"
+                                                      />
+                                                  </td>
+                                                  <td className="px-4 py-2">
+                                                      Rp.{" "}
+                                                      {parsingRibuan(
+                                                          item.price
+                                                      )}
+                                                  </td>
+                                              </tr>
+                                          );
+                                      })
+                                    : null}
                             </tbody>
                         </table>
                         <div className="flex flex-col border-s px-5 gap-3 text-center   ">
                             Uang Pembeli(Rp)
                             <input
-                                type="text"
+                                onChange={(e) => setPay(e.target.value)}
+                                type="number"
                                 className="border border-black rounded p-1"
                             />
                             <div className="flex gap-4 w-full">
@@ -157,12 +267,16 @@ function Transaction() {
                                 >
                                     Close
                                 </button>
-                                <button className="rounded bg-primary text-white font-semibold w-full p-1">
+                                <button
+                                    onClick={handlePay}
+                                    className="rounded bg-primary text-white font-semibold w-full p-1"
+                                >
                                     Pay
                                 </button>
                             </div>
                             <span className="text-red-500 text-left font-bold">
-                                Kembalian:
+                                Kembalian:{" "}
+                                {change ? "Rp. " + parsingRibuan(change) : ""}
                             </span>
                         </div>
                     </div>

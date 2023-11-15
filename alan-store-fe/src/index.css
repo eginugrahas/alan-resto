@@ -84,3 +84,10 @@ input[type=number] {
 input:focus {
   outline: none;
 }
+
+@media print {
+  @page {
+    size: 200mm 400mm;
+    margin: 4rem;
+  }
+}

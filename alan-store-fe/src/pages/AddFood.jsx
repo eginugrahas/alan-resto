@@ -31,7 +31,7 @@ function AddFood() {
         // }
 
         axios.post("http://localhost:8000/api/add-menu", formData).then((res) => {
-            console.log(res);
+            // console.log(res);
         }).then(() => {
            toast.success("Menu berhasil ditambahkan");
            setTimeout(() => {
